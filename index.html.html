@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmHatch — Hatch Local. Feed Rwanda.</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --soil:    #1B4332;
+    --canopy:  #2D6A4F;
+    --shoot:   #52B788;
+    --seed:    #D4A017;
+    --husk:    #F5EDD6;
+    --white:   #FFFFFF;
+    --ink:     #1A1A1A;
+    --muted:   #5C6B61;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.1rem 5%;
+    background: rgba(27, 67, 50, 0.97);
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 900;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-logo span { color: var(--seed); }
+
+  nav ul {
+    list-style: none;
+    display: flex; gap: 2rem;
+  }
+
+  nav ul a {
+    text-decoration: none;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.875rem; font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--seed); }
+
+  .nav-cta {
+    background: var(--seed);
+    color: var(--soil) !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 600 !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: #e8b41e !important; color: var(--soil) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--soil);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 5% 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(82,183,136,0.12) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--shoot);
+    background: rgba(82,183,136,0.12);
+    padding: 0.35rem 0.85rem;
+    border-radius: 2px;
+    margin-bottom: 1.4rem;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.4rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--seed);
+    position: relative;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.7);
+    max-width: 480px;
+    margin-bottom: 2.4rem;
+    font-weight: 300;
+    line-height: 1.75;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--seed);
+    color: var(--soil);
+    padding: 0.85rem 2rem;
+    border: none; border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none; display: inline-block;
+  }
+
+  .btn-primary:hover { background: #e8b41e; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--white);
+    padding: 0.85rem 2rem;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem; font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+
+  .btn-ghost:hover { border-color: var(--shoot); color: var(--shoot); }
+
+  /* Hero right — egg visual */
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .egg-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.7rem;
+    padding: 2rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(82,183,136,0.2);
+    border-radius: 12px;
+  }
+
+  .egg {
+    width: 48px; height: 60px;
+    background: var(--husk);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    position: relative;
+    transition: transform 0.3s;
+  }
+
+  .egg:hover { transform: scale(1.08); }
+
+  .egg.hatching {
+    background: linear-gradient(135deg, var(--husk) 60%, var(--shoot) 100%);
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .egg.hatching::after {
+    content: '';
+    position: absolute;
+    top: 28%; left: 20%;
+    width: 60%; height: 2px;
+    background: var(--shoot);
+    border-radius: 2px;
+    transform: rotate(-15deg);
+  }
+
+  @keyframes glow {
+    from { box-shadow: 0 0 6px rgba(82,183,136,0.3); }
+    to   { box-shadow: 0 0 18px rgba(82,183,136,0.7); }
+  }
+
+  .hatch-label {
+    font-size: 0.75rem; color: rgba(255,255,255,0.45);
+    letter-spacing: 0.08em; text-align: center;
+  }
+
+  .hatch-label strong { color: var(--shoot); }
+
+  /* STATS STRIP */
+  .stats {
+    background: var(--canopy);
+    padding: 2rem 5%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .stat-item { padding: 1rem; }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem; font-weight: 900;
+    color: var(--seed);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.82rem; color: rgba(255,255,255,0.65);
+    margin-top: 0.4rem; line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+
+  /* SERVICES */
+  .services {
+    padding: 6rem 5%;
+    background: var(--white);
+  }
+
+  .section-eyebrow {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--shoot);
+    margin-bottom: 0.6rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 900;
+    color: var(--soil);
+    line-height: 1.15;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-sub {
+    font-size: 1rem; color: var(--muted);
+    max-width: 520px; margin-bottom: 3rem;
+    line-height: 1.7;
+  }
+
+  .service-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .service-card {
+    border: 1.5px solid #E8EDE9;
+    border-radius: 10px;
+    padding: 2.2rem 2rem;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--shoot);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.25s;
+  }
+
+  .service-card:hover { border-color: var(--shoot); box-shadow: 0 8px 28px rgba(27,67,50,0.09); transform: translateY(-3px); }
+  .service-card:hover::before { transform: scaleY(1); }
+
+  .card-icon {
+    width: 48px; height: 48px;
+    background: var(--husk);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--shoot);
+    background: rgba(82,183,136,0.1);
+    padding: 0.25rem 0.6rem; border-radius: 3px;
+    margin-bottom: 0.7rem;
+  }
+
+  .service-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem; font-weight: 700;
+    color: var(--soil); margin-bottom: 0.6rem;
+  }
+
+  .service-card p {
+    font-size: 0.9rem; color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-price {
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--soil);
+  }
+
+  .card-price span {
+    font-size: 0.8rem; font-weight: 400; color: var(--muted);
+  }
+
+  /* HOW IT WORKS */
+  .how {
+    background: var(--husk);
+    padding: 6rem 5%;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .step {
+    text-align: center;
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -1rem; top: 2.2rem;
+    font-size: 1.4rem; color: var(--shoot);
+  }
+
+  .step-num {
+    width: 52px; height: 52px;
+    background: var(--soil);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 900;
+    color: var(--seed);
+    margin: 0 auto 1.2rem;
+  }
+
+  .step h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--soil); margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* BOOKING FORM */
+  .booking {
+    padding: 6rem 5%;
+    background: var(--white);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .booking-info h2 { margin-bottom: 1rem; }
+
+  .booking-info p {
+    color: var(--muted); line-height: 1.75; margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .contact-line {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-size: 0.9rem; color: var(--muted); margin-bottom: 0.6rem;
+  }
+
+  .contact-line strong { color: var(--soil); }
+
+  .form-card {
+    background: var(--soil);
+    border-radius: 12px;
+    padding: 2.5rem;
+  }
+
+  .form-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--white); margin-bottom: 1.8rem;
+  }
+
+  .form-group { margin-bottom: 1.2rem; }
+
+  .form-group label {
+    display: block;
+    font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 0.45rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--shoot); }
+
+  .form-group select option { background: var(--soil); color: var(--white); }
+
+  .form-group textarea { resize: vertical; min-height: 90px; }
+
+  .form-submit {
+    width: 100%;
+    background: var(--seed);
+    color: var(--soil);
+    border: none; border-radius: 6px;
+    padding: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s;
+  }
+
+  .form-submit:hover { background: #e8b41e; }
+
+  /* FOOTER */
+  footer {
+    background: var(--soil);
+    padding: 3rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 900;
+    color: var(--white);
+  }
+
+  .footer-logo span { color: var(--seed); }
+
+  footer p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .footer-links {
+    display: flex; gap: 1.5rem;
+  }
+
+  .footer-links a {
+    font-size: 0.8rem; color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--shoot); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; padding-top: 6rem; }
+    .hero-visual { display: none; }
+    .service-cards, .steps, .booking { grid-template-columns: 1fr; gap: 1.5rem; }
+    .stats { grid-template-columns: 1fr; }
+    .step::after { display: none; }
+    nav ul { display: none; }
+  }
+
+  /* Prototype badge */
+  .proto-badge {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+    background: var(--seed);
+    color: var(--soil);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="proto-badge">Prototype — FarmHatch MVP</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Farm<span>Hatch</span></div>
+  <ul>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#booking" class="nav-cta">Book a service</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Poultry hatching — made local</div>
+    <h1>Stop depending on<br><em>imported chicks.</em><br>Hatch your own.</h1>
+    <p class="hero-sub">FarmHatch gives small poultry farmers in Rwanda the tools and services to hatch eggs right on their own farm — affordably, reliably, and without the long trips to Kigali.</p>
+    <div class="hero-actions">
+      <a href="#booking" class="btn-primary">Book a hatching service</a>
+      <a href="#services" class="btn-ghost">See our incubators</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="egg-grid">
+      <div class="egg"></div>
+      <div class="egg hatching"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+      <div class="egg hatching"></div>
+      <div class="egg"></div>
+      <div class="egg hatching"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+      <div class="egg hatching"></div>
+      <div class="egg"></div>
+      <div class="egg"></div>
+    </div>
+    <p class="hatch-label"><strong>4 eggs hatching</strong> · batch simulation</p>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">12.9M</div>
+    <div class="stat-label">Poultry birds in Rwanda (2025)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">70%</div>
+    <div class="stat-label">Of chicken supply still imported</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">2,450+</div>
+    <div class="stat-label">Small & medium farmers we can serve</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-eyebrow">What we offer</div>
+  <h2 class="section-title">Two ways to work<br>with FarmHatch</h2>
+  <p class="section-sub">Whether you want to own the process or just get your eggs hatched — we have a solution for you.</p>
+
+  <div class="service-cards">
+    <div class="service-card">
+      <div class="card-icon">🥚</div>
+      <div class="card-tag">Own it</div>
+      <h3>Buy an Incubator</h3>
+      <p>A locally built, solar-ready egg incubator designed for Rwandan farm conditions. One purchase gives you production independence — hatch on your schedule, on your farm.</p>
+      <div class="card-price">150,000 RWF <span>/ unit</span></div>
+    </div>
+
+    <div class="service-card">
+      <div class="card-icon">🐣</div>
+      <div class="card-tag">Use the service</div>
+      <h3>Hatchery Service</h3>
+      <p>Bring your eggs to us. We handle the incubation and hand back healthy day-old chicks. No equipment needed — just bring your eggs and we do the rest.</p>
+      <div class="card-price">25,000 RWF <span>/ batch</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-eyebrow">The process</div>
+  <h2 class="section-title">Simple from start<br>to hatch</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Book your service</h4>
+      <p>Fill in the form below with your location and what you need — incubator or hatchery service.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>We confirm & collect</h4>
+      <p>Our team reaches out to confirm and arrange pickup of your eggs or delivery of your incubator.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Receive your chicks</h4>
+      <p>21 days later, your chicks are ready. We deliver, or you collect — whichever works for you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING FORM -->
+<section class="booking" id="booking">
+  <div class="booking-info">
+    <div class="section-eyebrow">Get started</div>
+    <h2 class="section-title">Book a service<br>or order an incubator</h2>
+    <p>Fill in the form and we'll get back to you within 24 hours to confirm your booking and next steps.</p>
+    <div class="contact-line">📍 <span><strong>Based in Kigali,</strong> serving farmers across Rwanda</span></div>
+    <div class="contact-line">📞 <span><strong>+250 700 000 000</strong> (Mon–Sat, 8am–6pm)</span></div>
+    <div class="contact-line">📧 <span><strong>hello@farmhatch.rw</strong></span></div>
+  </div>
+
+  <div class="form-card">
+    <h3>Make a booking</h3>
+
+    <div class="form-group">
+      <label>Full name</label>
+      <input type="text" placeholder="e.g. Uwase Marie">
+    </div>
+
+    <div class="form-group">
+      <label>Phone number</label>
+      <input type="tel" placeholder="+250 7XX XXX XXX">
+    </div>
+
+    <div class="form-group">
+      <label>District</label>
+      <select>
+        <option value="">Select your district</option>
+        <option>Gasabo</option>
+        <option>Kicukiro</option>
+        <option>Nyarugenge</option>
+        <option>Musanze</option>
+        <option>Rubavu</option>
+        <option>Huye</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>What do you need?</label>
+      <select>
+        <option value="">Select a service</option>
+        <option>Buy an incubator (150,000 RWF)</option>
+        <option>Hatchery service (25,000 RWF / batch)</option>
+        <option>I'm not sure yet — contact me</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Number of eggs (if using hatchery service)</label>
+      <input type="number" placeholder="e.g. 50">
+    </div>
+
+    <div class="form-group">
+      <label>Anything else we should know?</label>
+      <textarea placeholder="Any details about your farm, timing, or questions..."></textarea>
+    </div>
+
+    <button class="form-submit" onclick="handleSubmit()">Submit booking request</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Farm<span>Hatch</span></div>
+  <p>© 2025 FarmHatch Rwanda. Prototype — not yet in production.</p>
+  <div class="footer-links">
+    <a href="#services">Services</a>
+    <a href="#how">How it works</a>
+    <a href="#booking">Book now</a>
+  </div>
+</footer>
+
+<script>
+  function handleSubmit() {
+    const btn = document.querySelector('.form-submit');
+    btn.textContent = '✓ Request received — we\'ll be in touch within 24hrs';
+    btn.style.background = '#2D6A4F';
+    btn.style.color = '#fff';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = 'Submit booking request';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.disabled = false;
+    }, 4000);
+  }
+
+  // Animate eggs randomly
+  const eggs = document.querySelectorAll('.egg:not(.hatching)');
+  setInterval(() => {
+    eggs.forEach(egg => {
+      egg.style.transform = Math.random() > 0.85 ? 'scale(1.05) rotate(3deg)' : '';
+    });
+  }, 1800);
+</script>
+</body>
+</html>
